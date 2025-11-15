@@ -18,6 +18,7 @@ export default function PentagramWithPulse({
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioRef = useRef<AudioContext | null>(null);
+  const schedulerIdRef = useRef<number | null>(null);
 
   const [started, setStarted] = useState(false);
   const [stopped, setStopped] = useState(false);
@@ -30,6 +31,10 @@ export default function PentagramWithPulse({
   function handleStop() {
     setStopped(true);
     setStarted(false);
+    if (schedulerIdRef.current) {
+      clearTimeout(schedulerIdRef.current);
+      schedulerIdRef.current = null;
+    }
     if (audioRef.current) {
       audioRef.current.close();
       audioRef.current = null;
@@ -64,14 +69,19 @@ export default function PentagramWithPulse({
     // AUDIO SCHEDULER
     const soundBeatDuration = 60 / soundBpm;
     let nextSoundBeat = audio.currentTime + 0.1;
+    let schedulerRunning = true;
 
     function scheduler() {
-      if (stopped) return;
+      if (!schedulerRunning) return;
+      
+      // Schedule all beats that need to happen in the next 100ms
       while (nextSoundBeat < audio.currentTime + 0.1) {
         playKick();
         nextSoundBeat += soundBeatDuration;
       }
-      requestAnimationFrame(scheduler);
+      
+      // Check again in 25ms (4 times per look-ahead window)
+      schedulerIdRef.current = window.setTimeout(scheduler, 25);
     }
 
     scheduler();
@@ -85,7 +95,7 @@ export default function PentagramWithPulse({
 
     const visualBeatDuration = 60 / bpm;
 
-    let lastStepTime = audio.currentTime;
+    const startTime = audio.currentTime;
     let currentStep = 0;
 
     // Precompute star points for stepping
@@ -114,11 +124,11 @@ export default function PentagramWithPulse({
       if (stopped || !ctx || !canvas) return;
 
       const now = audio.currentTime;
-
-      if (now - lastStepTime >= visualBeatDuration) {
-        currentStep = (currentStep + 1) % 5;
-        lastStepTime = now;
-      }
+      const elapsed = now - startTime;
+      
+      // Calculate which step we should be on based on total elapsed time
+      const calculatedStep = Math.floor(elapsed / visualBeatDuration) % 5;
+      currentStep = calculatedStep;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawStar();
@@ -132,6 +142,14 @@ export default function PentagramWithPulse({
     }
 
     animate();
+
+    // Cleanup function
+    return () => {
+      schedulerRunning = false;
+      if (schedulerIdRef.current) {
+        clearTimeout(schedulerIdRef.current);
+      }
+    };
 
   }, [started, stopped, bpm, soundBpm, size, radius]);
 
