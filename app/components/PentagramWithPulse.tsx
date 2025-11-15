@@ -111,7 +111,7 @@ export default function PentagramWithPulse({
     }
 
     function animate() {
-      if (stopped || !ctx) return;
+      if (stopped || !ctx || !canvas) return;
 
       const now = audio.currentTime;
 
