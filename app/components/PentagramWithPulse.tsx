@@ -99,19 +99,44 @@ export default function PentagramWithPulse({
       });
     }
 
-    function drawStar() {
-      ctx.beginPath();
-      for (let i = 0; i < 5; i++) {
-        ctx.lineTo(starPoints[i].x, starPoints[i].y);
-      }
-      ctx.closePath();
-      ctx.strokeStyle = "white";
-      ctx.lineWidth = 3;
-      ctx.stroke();
-    }
+    const ctx: CanvasRenderingContext2D | null = canvas.getContext("2d");
+if (!ctx) return; // bail if canvas context is missing
+
+function drawStar() {
+  if (!ctx) return; // TypeScript now knows ctx is safe
+  ctx.beginPath();
+  for (let i = 0; i < 5; i++) {
+    ctx.lineTo(starPoints[i].x, starPoints[i].y);
+  }
+  ctx.closePath();
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
+
 
     function animate() {
-      if (stopped) return;
+      function animate() {
+  if (stopped || !ctx) return;
+
+  const now = audio.currentTime;
+
+  if (now - lastStepTime >= visualBeatDuration) {
+    currentStep = (currentStep + 1) % 5;
+    lastStepTime = now;
+  }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawStar();
+
+  ctx.beginPath();
+  ctx.arc(starPoints[currentStep].x, starPoints[currentStep].y, 20, 0, Math.PI * 2);
+  ctx.fillStyle = "red";
+  ctx.fill();
+
+  requestAnimationFrame(animate);
+}
+if (stopped) return;
 
       const now = audio.currentTime;
 
