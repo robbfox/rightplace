@@ -2,10 +2,10 @@
 
 This is a web-based conductor and visual metronome designed specifically for practicing the complex 10/4 time signature of Radiohead's iconic song, "Everything In Its Right Place." It provides both a rhythmic audio pulse and a clear, stepping visual guide to help musicians stay in time.
 
-**Live Demo:** You can access the deployed application here: **[YOUR_VERCEL_DEPLOYMENT_LINK]**
+**Live Demo:** You can access the deployed application here: **[https://rightplace-black.vercel.app/]**
 
-![Radiohead Conductor Screenshot](https://i.imgur.com/your-screenshot.png) 
-*(To get a screenshot URL, you can take a screenshot, upload it to a service like Imgur, and paste the direct link here. This is optional but highly recommended!)*
+![Radiohead Conductor Screenshot](https://i.postimg.cc/Yqtv70C1/Screenshot-(98).png) 
+
 
 ---
 
