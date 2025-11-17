@@ -56,7 +56,7 @@ export default function PentagramWithPulse({
       osc.type = "sine";
       osc.frequency.setValueAtTime(60, audio.currentTime);
 
-      gain.gain.setValueAtTime(0.8, audio.currentTime);
+      gain.gain.setValueAtTime(0.9, audio.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.15);
 
       osc.connect(gain);
